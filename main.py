@@ -1,33 +1,46 @@
 from utilities import get_samples, write_samples
 from progress.bar import Bar
-from observables import *  
+from physical_quantities import observables
+# from physical_quantities import observables
+from plots import *
+from time import time
+
+equib = 100_000
+n = 100_000
+sub_dir = "quantities/"
+
+# number of different tempratures to simulate
+temps = 50
+Ts = np.linspace(1.5, 1.5 * Tc, temps)
+# The different sizes of the grid to simutale
+Ns = [8, 16, 32, 64]
+sizes = len(Ns)
 
 
-equib = 100
-n = 100
-m = 20
-Ns = [8, 16]
-Ts = np.linspace(1.5, 1.2 * Tc, m)
-
-observables = {
-    "E": energy_density,
-    "E2": energy_density_squared,
-    "abs_M": absolute_magnetization,
-    "M2": magnetization_squared,
-}
-
-def sample_observables():
+def sample_observables(sub_dir=""):
     """ creates a file with samples from a MC-walk of the observables """
-    bar = Bar("sampling", max=len(Ns)*m)
-    samples = {key : np.empty(m) for key in observables}
+
+    bar = Bar("sampling", max=sizes * temps)
+    samples_dict = {key: np.empty((sizes, temps)) for key in observables}
+    times = np.zeros(sizes)
     
-    for _, N in enumerate(Ns):
-        for i, T in enumerate(Ts):
-            data = get_samples(N, T, n, equib, observables)
-            for j, key in enumerate(samples):
-                samples[key][i] = data[j]
-        bar.next()
+    for i, N in enumerate(Ns):
+        for j, T in enumerate(Ts):
+            t = time()
+            samples = get_samples(N, T, n, equib, observables)
+            times[i] += time() - t
+            for k, key in enumerate(samples_dict):
+                samples_dict[key][i, j] = samples[k]
+
+            bar.next()
     
     bar.finish()
     print("writing data")
-    write_samples(samples, Ns, Ts)
+    times /= temps
+    write_samples(samples_dict, Ns, Ts, times, sub_dir=sub_dir)
+
+
+if __name__ == "__main__":
+    # plot_equilibration()
+    sample_observables(sub_dir=sub_dir)
+    plot_observables(sub_dir=sub_dir)

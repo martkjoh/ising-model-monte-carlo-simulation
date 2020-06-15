@@ -1,7 +1,7 @@
 import numpy as np
 from numpy import exp, sqrt, log as ln
 from numpy.random import choice, randint, rand
-
+from os import path, mkdir
 
 def get_s(N):
     """ Return lattice of spins, randomly oriented """
@@ -28,12 +28,12 @@ def MC_sweep(s, N, T):
         s[to_flip] *= -1
 
 
-def sample(s, N, observables):
+def get_sample_from_state(s, N, observables):
     """ samples a set of observables from a configuration of s """
-    obs = np.empty(len(observables))
+    sample = np.empty(len(observables))
     for i, key in enumerate(observables):
-        obs[i] = observables[key](s, N)
-    return obs
+        sample[i] = observables[key](s, N)
+    return sample
 
 
 def get_samples(N, T, n, equib, observables):
@@ -42,17 +42,44 @@ def get_samples(N, T, n, equib, observables):
     n MC-sweeps and at temprature T samples all the observables, 
     returning an array of the samples
     """
-    obs = np.zeros(len(observables))
-
+    sample_avg = np.zeros(len(observables))
     s = get_s(N)
     for _ in range(equib):
         MC_sweep(s, N, T)
     for _ in range(n):
         MC_sweep(s, N, T)
-        obs += sample(s, N, observables)
-    return obs / n
+        sample_avg += get_sample_from_state(s, N, observables)
+    return sample_avg / n
 
-def write_samples(samples, Ns, Ts):
+
+def write_samples(samples, Ns, Ts, times, sub_dir=""):
     """ Writes a dict of samples at different Ns and Ts to .csv files """
-    for i, key in samples:
-        np.savetxt("data" + key + ".csv", [Ns[i], Ts[i], samples[key]])
+
+    data_path = "data/" + sub_dir
+
+    if not path.isdir(data_path):
+        mkdir(data_path)
+
+    np.savetxt(data_path + "sizes.csv", Ns)
+    np.savetxt(data_path + "temps.csv", Ts)
+    np.savetxt(data_path + "times.csv", times)
+    for key in samples:
+        np.savetxt(data_path + key + ".cvs", samples[key])
+
+
+def read_samples(data, sub_dir=""):
+    """ Reads a dict of samples at different Ns and Ts from .csv files """
+
+    data_path = "data/" + sub_dir
+
+    if not path.isdir(data_path):
+        raise  Exception("Direcotry does not exist")
+
+    samples = {name : 0 for name in data}
+
+    Ns = np.loadtxt(data_path + "sizes.csv")
+    Ts = np.loadtxt(data_path + "temps.csv")
+    for name in data:
+        samples[name] = np.loadtxt(data_path + name + ".cvs")
+        
+    return Ns, Ts, samples

@@ -20,3 +20,11 @@ def energy_density(s, N):
     
 def energy_density_squared(s, N):
     return energy_density(s, N)** 2
+
+
+observables = {
+    "E": energy_density,
+    "E2": energy_density_squared,
+    "abs_M": absolute_magnetization,
+    "M2": magnetization_squared,
+}

@@ -1,17 +1,18 @@
+import numpy as np
 from matplotlib import pyplot as plt
-from os.path import expanduser
+from os import path, mkdir
 
-from utilities import get_s, MC_sweep, get_samples
-from observables import *
+from utilities import get_s, MC_sweep, get_samples, read_samples
+from physical_quantities import observables, Tc
 
 
 def plot_equilibration():
-    N = 50
+    N = 200
     k = 6
-    equib = 100_000
+    equib = 100
     Ts = np.linspace(0.01, 1.2*Tc, k)
 
-    fig, ax = plt.subplots(2, k, figsize=(16, 8))
+    fig, ax = plt.subplots(2, k, figsize=(24, 12))
     fig.suptitle("$N={}$\n".format(N) + "{} sweeps".format(equib))
 
     for i, T in enumerate(Ts):
@@ -24,77 +25,25 @@ def plot_equilibration():
         ax[1, i].imshow(s)
 
     plt.tight_layout()
-    plt.savefig(expanduser("~") + "/Desktop/test2"  + ".png")
+    plt.savefig("figs/equilibration.png")
     plt.close(fig)
 
-def plot_observables():
-    observables = {
-        "E": energy_density,
-        "|M|": absolute_magnetization
-    }
 
-    equib = 100_000
-    n = 100_000
-    m = 1
-    k = 20
-    l = len(observables)
+def plot_observables(sub_dir=""):
+    Ns, Ts, samples = read_samples(list(observables), sub_dir=sub_dir)
+    fig_path = "figs/" + sub_dir
+    if not path.isdir(fig_path):
+        mkdir(fig_path)
 
-    Ns = [8, 16]
-    Ts = np.linspace(1.5, 1.2*Tc, k)
+    for quantity in list(observables):
+        fig, ax = plt.subplots(figsize=(10, 8))
+        fig.suptitle = quantity
 
-    fig, ax = plt.subplots(l, figsize=(10, 10))
+        for i, N in enumerate(Ns):
+            ax.plot(Ts, samples[quantity][i], ".", label="$N ={}$".format(N))
+            ax.legend()
+        
+        plt.tight_layout()
+        plt.savefig(fig_path + quantity + ".png")
+        plt.close(fig)
 
-    if l==1: ax = [ax,]
-
-    for i, N in enumerate(Ns):
-        print(i)
-        samples = np.empty((k, l))
-        for j, T in enumerate(Ts):
-            samples[j] = get_samples(N, T, n, m, equib, observables)
-        for j, key in enumerate(observables):
-            ax[j].plot(Ts, samples[:, j], ".", label="$N ={}$".format(N))
-            ax[j].legend()
-            ax[j].set_title = "$" + key + "$"
-    
-    plt.tight_layout()
-    plt.savefig(expanduser("~") + "/Desktop/test"  + ".png")
-    plt.close(fig)
-
-def plot_heat_capacity():
-    observables = {
-        "energy_density": energy_density,
-        "energy_density_squared": energy_density_squared
-    }
-
-    samples = {}
-    equib = 1000
-    n = 100
-    m = 2
-    k = 10
-    l = len(observables)
-
-    Ns = [8, 16]
-    Ts = np.linspace(0.1, 1.2*Tc, k)
-
-    fig, ax = plt.subplots(l)
-
-    if l == 1: ax = [ax,]
-    
-
-    for i, N in enumerate(Ns):
-        print(i)
-        samples = np.empty((k, l))
-        for j, T in enumerate(Ts):
-            samples[j] = get_samples(N, T, n, m, equib, observables)
-
-        heat_cap = samples[:, 1] - samples[:, 0]**2 
-        ax[j].plot(Ts, heat_cap, ".", label="$N ={}$".format(N))
-
-    plt.tight_layout()
-    plt.savefig(expanduser("~") + "/Desktop/test3"  + ".png")
-    plt.close(fig)
-    
-
-if __name__ == "__main__":
-    # plot_equilibration()
-    plot_observables()
