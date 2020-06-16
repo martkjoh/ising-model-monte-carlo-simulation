@@ -1,3 +1,4 @@
 data/test/*
 figs/test/*
+figs/quantities/*
 __pycache__/*

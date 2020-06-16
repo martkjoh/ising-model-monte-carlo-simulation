@@ -18,7 +18,7 @@ sizes = len(Ns)
 
 
 def sample_observables(sub_dir=""):
-    """ creates a file with samples from a MC-walk of the observables """
+    """ creates a file with samples of the observables from a MC-walk """
 
     bar = Bar("sampling", max=sizes * temps)
     samples_dict = {key: np.empty((sizes, temps)) for key in observables}
