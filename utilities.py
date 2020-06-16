@@ -9,6 +9,7 @@ def get_s(N):
 
 def get_delta_H(s, N):
     """ retrns lattice with change in energy from flipping each spin"""
+
     sum_neigh = np.zeros_like(s)
     for j in range(2):
         for n in (-1, 1):
@@ -18,6 +19,7 @@ def get_delta_H(s, N):
 
 def MC_sweep(s, N, T):
     """ MC-hastings sweep, with prob. c of trying to flipping each spin each loop """
+
     c = 0.5
     for _ in range(int(1 / c)):
         to_flip = rand(N, N) < c
@@ -30,6 +32,7 @@ def MC_sweep(s, N, T):
 
 def get_sample_from_state(s, N, observables):
     """ samples a set of observables from a configuration of s """
+
     sample = np.empty(len(observables))
     for i, key in enumerate(observables):
         sample[i] = observables[key](s, N)
@@ -42,6 +45,7 @@ def get_samples(N, T, n, equib, observables):
     n MC-sweeps and at temprature T samples all the observables, 
     returning an array of the samples
     """
+
     sample_avg = np.zeros(len(observables))
     s = get_s(N)
     for _ in range(equib):
