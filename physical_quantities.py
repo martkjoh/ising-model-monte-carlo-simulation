@@ -24,7 +24,37 @@ def energy_density_squared(s, N):
 
 observables = {
     "E": energy_density,
-    "E2": energy_density_squared,
-    "abs_M": absolute_magnetization,
-    "M2": magnetization_squared,
+    "E^2": energy_density_squared,
+    "|M|": absolute_magnetization,
+    "M^2": magnetization_squared,
+}
+
+def heat_capacity(samples, T, N):
+    return (samples["E^2"] - samples["E"]**2) * np.outer(N, 1/T)**2
+
+def susceptability(samples, T, N):
+    return (samples["M^2"] - samples["|M|"]**2) * np.outer(N**2, 1/T)
+
+func_of_obs = {
+    "C_M": heat_capacity,
+    "\chi": susceptability
+}
+
+units = {
+    "E": "J",
+    "E^2": "J^2",
+    "|M|": "Am^{-1}",
+    "M^2": "A^2m^{-2}",
+    "C_M": "1",
+    "\chi": "Am^{-1}J^{-1}"
+}
+
+name = {
+    "E": "energy_density",
+    "E^2": "energy_density_squared",
+    "|M|": "absolute_magnetization",
+    "M^2": "magnetization squared",
+    "C_M": "heat_capacity",
+    "\chi": "susceptibility"
+   
 }

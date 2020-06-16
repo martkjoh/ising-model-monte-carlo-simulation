@@ -1,7 +1,7 @@
 from utilities import get_samples, write_samples
 from progress.bar import Bar
-from physical_quantities import observables
-# from physical_quantities import observables
+import numpy as np
+from physical_quantities import observables, Tc
 from plots import *
 from time import time
 
@@ -42,5 +42,6 @@ def sample_observables(sub_dir=""):
 
 if __name__ == "__main__":
     # plot_equilibration()
-    sample_observables(sub_dir=sub_dir)
+    # sample_observables(sub_dir=sub_dir)
     plot_observables(sub_dir=sub_dir)
+    plot_funcs(sub_dir=sub_dir)

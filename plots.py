@@ -3,7 +3,16 @@ from matplotlib import pyplot as plt
 from os import path, mkdir
 
 from utilities import get_s, MC_sweep, get_samples, read_samples
-from physical_quantities import observables, Tc
+from physical_quantities import observables, func_of_obs, Tc, units, name
+
+
+font = {
+    'family': 'serif',
+    'weight': 'normal',
+    'size': 30}
+plt.rcParams['mathtext.fontset'] = 'cm'
+plt.rc("lines", linewidth=1, markersize=3)
+styles = ["--x", "--o", "--+", "--d"]
 
 
 def plot_equilibration():
@@ -36,14 +45,32 @@ def plot_observables(sub_dir=""):
         mkdir(fig_path)
 
     for quantity in list(observables):
-        fig, ax = plt.subplots(figsize=(10, 8))
-        fig.suptitle = quantity
-
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.set_ylabel("$" + quantity + "/[\\mathrm{" + units[quantity] + "}]$")
+        ax.set_xlabel("$T / [J]$")
         for i, N in enumerate(Ns):
-            ax.plot(Ts, samples[quantity][i], ".", label="$N ={}$".format(N))
+            ax.plot(Ts, samples[quantity][i], styles[i], label="$N={}$".format(int(N)))
             ax.legend()
         
         plt.tight_layout()
-        plt.savefig(fig_path + quantity + ".png")
+        plt.savefig(fig_path + name[quantity] + ".png", dpi=300)
         plt.close(fig)
 
+def plot_funcs(sub_dir=""):
+    Ns, Ts, samples = read_samples(list(observables), sub_dir=sub_dir)
+    fig_path = "figs/" + sub_dir
+    if not path.isdir(fig_path):
+        mkdir(fig_path)
+
+    for quantity in list(func_of_obs):
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.set_ylabel("$" + quantity + "/[\\mathrm{" + units[quantity] + "}]$")
+        ax.set_xlabel("$T / [J]$")
+        y = func_of_obs[quantity](samples, Ts, Ns)
+        for i, N in enumerate(Ns):
+            ax.plot(Ts, y[i], styles[i], label="$N={}$".format(int(N)))
+            ax.legend()
+        
+        plt.tight_layout()
+        plt.savefig(fig_path + name[quantity] + ".png", dpi=300)
+        plt.close(fig)
