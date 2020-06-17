@@ -15,7 +15,7 @@ plt.rc("lines", linewidth=1, markersize=3)
 styles = ["--x", "--o", "--+", "--d", "--1", "--*"]
 
 
-def plot_equilibration():
+def equilibration():
     N = 200
     k = 6
     equib = 100
@@ -38,7 +38,7 @@ def plot_equilibration():
     plt.close(fig)
 
 
-def plot_observables(sub_dir):
+def vals(sub_dir):
     Ns, Ts, samples = read_samples(list(observables), sub_dir=sub_dir)
     fig_path = "figs/" + sub_dir
     if not path.isdir(fig_path):
@@ -59,7 +59,7 @@ def plot_observables(sub_dir):
         plt.savefig(fig_path + name[quantity] + ".png", dpi=300)
         plt.close(fig)
 
-def plot_funcs(sub_dir=""):
+def funcs(sub_dir=""):
     Ns, Ts, samples = read_samples(list(observables), sub_dir=sub_dir)
     fig_path = "figs/" + sub_dir
     if not path.isdir(fig_path):
@@ -81,7 +81,7 @@ def plot_funcs(sub_dir=""):
         plt.savefig(fig_path + name[quantity] + ".png", dpi=300)
         plt.close(fig)
 
-def mag_plot(sub_dir):
+def susc(sub_dir):
     Ns, Ts, samples = read_samples(list(observables), sub_dir=sub_dir)
     fig_path = "figs/" + sub_dir
     if not path.isdir(fig_path):
@@ -101,7 +101,7 @@ def mag_plot(sub_dir):
     plt.savefig(fig_path + "analytic.png")
     plt.close(fig)
 
-def plot_time_dependence(sub_dir):
+def time_dependence(sub_dir):
     times = read_times(sub_dir)
     Ns, _, _ = read_samples(list(observables), sub_dir=sub_dir)
     fig_path = "figs/" + sub_dir

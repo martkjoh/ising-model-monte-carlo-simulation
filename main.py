@@ -1,8 +1,8 @@
 from utilities import get_samples, write_samples
+import plots
 from progress.bar import Bar
 import numpy as np
 from physical_quantities import observables, Tc
-from plots import *
 from time import time
 
 equib = 100_000
@@ -48,10 +48,10 @@ def full_suite(sub_dir="test/", gen_data=False):
     if gen_data:
         sample_observables(sub_dir)
     
-    plot_observables(sub_dir)
-    plot_funcs(sub_dir)
-    mag_plot(sub_dir)
-    plot_time_dependence(sub_dir)
+    plots.vals(sub_dir)
+    plots.funcs(sub_dir)
+    plots.susc(sub_dir)
+    plots.time_dependence(sub_dir)
 
 
 if __name__ == "__main__":
