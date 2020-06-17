@@ -57,4 +57,4 @@ def full_suite(sub_dir="test/", gen_data=False):
 if __name__ == "__main__":
     # plot_equilibration()
 
-    full_suite(sub_dir=sub_dir)
+    full_suite()

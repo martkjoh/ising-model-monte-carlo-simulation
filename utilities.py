@@ -1,7 +1,9 @@
 import numpy as np
 from numpy import exp, sqrt, log as ln
 from numpy.random import choice, randint, rand
+from physical_quantities import ms, energy_MJ
 from os import path, mkdir
+
 
 def get_s(N):
     """ Return lattice of spins, randomly oriented """
@@ -18,13 +20,24 @@ def get_delta_H(s, N):
 
     return 2*s*sum_neigh
 
-def MC_sweep(s, N, T):
+def get_delta_H_MJ(s, N):
+    """ retrns lattice with change in energy from flipping each spin"""
+
+    sum_neigh = np.zeros_like(s)
+    s_pp = np.concatenate([np.ones((1, N), dtype=int), s, np.ones((1, N), dtype=int)])
+    for j in range(2):
+        for n in (-1, 1):
+            sum_neigh += np.roll(s_pp, n, axis=j)[1: -1]
+
+    return 2*s*sum_neigh
+
+def MC_sweep(s, N, T, dH=get_delta_H):
     """ MC-hastings sweep, with prob. c of trying to flipping each spin each loop """
 
     c = 0.5
     for _ in range(int(1 / c)):
         to_flip = rand(N, N) < c
-        delta_H = get_delta_H(s, N)
+        delta_H = dH(s, N)
         pos = delta_H > 0
         to_flip2 = exp(-delta_H[pos] / T) > rand(np.sum(pos))
         to_flip[pos] = np.logical_and(to_flip[pos], to_flip2)
@@ -55,6 +68,21 @@ def get_samples(N, T, n, equib, observables):
         MC_sweep(s, N, T)
         sample_avg += get_sample_from_state(s, N, observables)
     return sample_avg / n
+
+def Mon_Jasnow(N, T, n, equib):
+    """
+    Runs the Mon-Jasnow algorithm on an N*N matrix at temperature T, 
+    first equilibrating it for equib MC-sweeps, then sampling after each of n steps.
+    """
+    
+    fraction = 0
+    s = get_s(N)
+    for _ in range(equib):
+        MC_sweep(s, N, T, dH=get_delta_H_MJ)
+    for _ in range(n):
+        MC_sweep(s, N, T, dH=get_delta_H_MJ)
+        fraction += exp(-2 / T * ms(s, N))
+        return -T/N * ln(fraction/n)
 
 
 def write_samples(samples, Ns, Ts, times, sub_dir):
