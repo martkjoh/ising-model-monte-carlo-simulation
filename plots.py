@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from os import path, mkdir
 from progress.bar import Bar
 
-from utilities import get_s, MC_sweep, get_samples, read_samples, read_times, Mon_Jasnow
+from utilities import get_s, MC_sweep, get_samples, read_samples, read_times, read
 from physical_quantities import observables, func_of_obs, Tc, units, name
 
 
@@ -113,27 +113,20 @@ def time_dependence(sub_dir):
     plt.close(fig)
 
 
-def plot_Mon_Jasnow():
-    equib = 2_000
-    n = 1_000
-
-    # number of different tempratures to simulate
-    temps = 40
-    Ts = np.linspace(0.1, 1.2*Tc, temps)
-    # The different sizes of the grid to simutale
-    N = 64
-    fig, ax = plt.subplots()
-
-    tau = np.empty(temps)
-    bar = Bar(max=temps)
-    for i, T in enumerate(Ts):
-        tau[i] = Mon_Jasnow(N, T, n, equib)
-        bar.next()
-    bar.finish()
-
-    ax.plot(Ts, tau, "--.")
-    ax.plot([Tc, Tc], ax.get_ylim(), "k--", label="$T_c$") 
-    plt.show()
-
-if __name__ == "__main__":
-    plot_Mon_Jasnow()
+def Mon_Jasnow(sub_dir):
+    Ns, Ts, _= read_samples([], sub_dir)
+    name = "tau"
+    tau = read(sub_dir, name)
+    
+    fig, ax = plt.subplots(figsize=(6, 4))
+    ax.set_ylabel("$\\tau/[J]$")
+    ax.set_xlabel("$T/[J]$")
+    for i, N in enumerate(Ns):
+        ax.plot(Ts, tau[i], "--.", label="$N={}$".format(int(N)))
+    ax.plot([Tc, Tc], ax.get_ylim(), "k--", label="$T_c$")
+    ax.legend()
+    ax.grid(True)
+    
+    plt.tight_layout()
+    plt.savefig("figs/" + sub_dir + name + ".png", dpi=300)
+    plt.close(fig)

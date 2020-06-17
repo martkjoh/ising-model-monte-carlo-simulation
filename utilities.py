@@ -74,46 +74,49 @@ def Mon_Jasnow(N, T, n, equib):
     Runs the Mon-Jasnow algorithm on an N*N matrix at temperature T, 
     first equilibrating it for equib MC-sweeps, then sampling after each of n steps.
     """
-    
+
     fraction = 0
+
     s = get_s(N)
     for _ in range(equib):
         MC_sweep(s, N, T, dH=get_delta_H_MJ)
     for _ in range(n):
         MC_sweep(s, N, T, dH=get_delta_H_MJ)
         fraction += exp(-2 / T * ms(s, N))
-        return -T/N * ln(fraction/n)
+    return - T / N * ln(fraction / n)
+    
+def write(data, sub_dir, name):
+    data_path = "data/" + sub_dir
+
+    if not path.isdir(data_path):
+        mkdir(data_path)
+    np.savetxt(data_path + name + ".csv", data)
+
+def read(sub_dir, name):
+    data_path = "data/" + sub_dir
+    if not path.isdir(data_path):
+        raise  Exception("Direcotry does not exist")
+    return np.loadtxt(data_path + name + ".csv")
 
 
 def write_samples(samples, Ns, Ts, times, sub_dir):
     """ Writes a dict of samples at different Ns and Ts to .csv files """
 
-    data_path = "data/" + sub_dir
-
-    if not path.isdir(data_path):
-        mkdir(data_path)
-
-    np.savetxt(data_path + "sizes.csv", Ns)
-    np.savetxt(data_path + "temps.csv", Ts)
-    np.savetxt(data_path + "times.csv", times)
+    write(Ns, sub_dir, "sizes")
+    write(Ts, sub_dir, "temps")
+    write(times, sub_dir, "times")
     for key in samples:
-        np.savetxt(data_path + key + ".cvs", samples[key])
+        write(samples[key], sub_dir, key)
 
 
 def read_samples(data, sub_dir):
     """ Reads a dict of samples at different Ns and Ts from .csv files """
 
-    data_path = "data/" + sub_dir
-
-    if not path.isdir(data_path):
-        raise  Exception("Direcotry does not exist")
-
+    Ns = read(sub_dir, "sizes")
+    Ts = read(sub_dir, "temps")
     samples = {name : 0 for name in data}
-
-    Ns = np.loadtxt(data_path + "sizes.csv")
-    Ts = np.loadtxt(data_path + "temps.csv")
     for name in data:
-        samples[name] = np.loadtxt(data_path + name + ".cvs")
+        samples[name] = read(sub_dir, name)
         
     return Ns, Ts, samples
 

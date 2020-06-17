@@ -26,13 +26,13 @@ def energy_MJ(s, N, border=(1, 1)):
     
     row = np.ones((1, N), dtype=int)
     s_w_border = np.concatenate([border[0]*row, s, border[1]*row])
-    sum_neigh = np.zeros_like(s_w_border)
+    sum_neigh = np.zeros_like(s)
 
     for j in range(2):
         for n in (-1, 1):
-            sum_neigh += np.roll(s_w_border, n, axis=j)
+            sum_neigh += np.roll(s_w_border, n, axis=j)[1:-1]
 
-    return - 1/2*np.sum(s_w_border*sum_neigh)
+    return - 1/2*np.sum(s * sum_neigh)
     
 def ms(s, N):
     return np.sum(s[-1])
