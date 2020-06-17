@@ -5,15 +5,15 @@ from physical_quantities import observables, Tc
 from plots import *
 from time import time
 
-equib = 10_000
-n = 10_000
+equib = 100_000
+n = 100_000
 sub_dir = "quantities/"
 
 # number of different tempratures to simulate
 temps = 50
-Ts = np.linspace(1.5, 3, temps)
+Ts = np.linspace(1.5, 1.5*Tc, temps)
 # The different sizes of the grid to simutale
-Ns = [8, 16, 32]
+Ns = [8, 16, 32, 64]
 sizes = len(Ns)
 
 
@@ -27,12 +27,14 @@ def sample_observables(sub_dir):
     for i, N in enumerate(Ns):
         for j, T in enumerate(Ts):
             t = time()
+
             samples = get_samples(N, T, n, equib, observables)
-            times[i] += time() - t
             for k, key in enumerate(samples_dict):
                 samples_dict[key][i, j] = samples[k]
-
+            
             bar.next()
+            times[i] += time() - t
+
     
     bar.finish()
     print("writing data")
@@ -40,20 +42,19 @@ def sample_observables(sub_dir):
     write_samples(samples_dict, Ns, Ts, times, sub_dir=sub_dir)
 
 
-def full_suite(sub_dir="test", gen_data=False):
+def full_suite(sub_dir="test/", gen_data=False):
     """ Runs the full suit of functinos: generating data and making plots """
 
     if gen_data:
-        sample_observables(sub_dir=sub_dir)
+        sample_observables(sub_dir)
     
-    plot_observables(sub_dir=sub_dir)
-    plot_funcs(sub_dir=sub_dir)
-    mag_plot(sub_dir=sub_dir)
-
-
+    plot_observables(sub_dir)
+    plot_funcs(sub_dir)
+    mag_plot(sub_dir)
+    plot_time_dependence(sub_dir)
 
 
 if __name__ == "__main__":
     # plot_equilibration()
 
-    full_suite(gen_data=True)
+    full_suite(sub_dir=sub_dir)

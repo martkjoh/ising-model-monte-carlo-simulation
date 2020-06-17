@@ -5,6 +5,7 @@ from os import path, mkdir
 
 def get_s(N):
     """ Return lattice of spins, randomly oriented """
+
     return choice((-1, 1), (N, N))
 
 def get_delta_H(s, N):
@@ -56,7 +57,7 @@ def get_samples(N, T, n, equib, observables):
     return sample_avg / n
 
 
-def write_samples(samples, Ns, Ts, times, sub_dir=""):
+def write_samples(samples, Ns, Ts, times, sub_dir):
     """ Writes a dict of samples at different Ns and Ts to .csv files """
 
     data_path = "data/" + sub_dir
@@ -71,7 +72,7 @@ def write_samples(samples, Ns, Ts, times, sub_dir=""):
         np.savetxt(data_path + key + ".cvs", samples[key])
 
 
-def read_samples(data, sub_dir=""):
+def read_samples(data, sub_dir):
     """ Reads a dict of samples at different Ns and Ts from .csv files """
 
     data_path = "data/" + sub_dir
@@ -87,3 +88,11 @@ def read_samples(data, sub_dir=""):
         samples[name] = np.loadtxt(data_path + name + ".cvs")
         
     return Ns, Ts, samples
+
+def read_times(sub_dir):
+    data_path = "data/" + sub_dir
+
+    if not path.isdir(data_path):
+        raise Exception("Direcotry does not exist")
+    
+    return np.loadtxt(data_path + "times.csv")

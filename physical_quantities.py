@@ -55,6 +55,5 @@ name = {
     "|M|": "absolute_magnetization",
     "M^2": "magnetization squared",
     "C_M": "heat_capacity",
-    "\chi": "susceptibility"
-   
+    "\chi": "susceptibility"  
 }

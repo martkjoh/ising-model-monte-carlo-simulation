@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from os import path, mkdir
 
-from utilities import get_s, MC_sweep, get_samples, read_samples
+from utilities import get_s, MC_sweep, get_samples, read_samples, read_times
 from physical_quantities import observables, func_of_obs, Tc, units, name
 
 
@@ -12,7 +12,7 @@ font = {
     'size': 30}
 plt.rcParams['mathtext.fontset'] = 'cm'
 plt.rc("lines", linewidth=1, markersize=3)
-styles = ["--x", "--o", "--+", "--d"]
+styles = ["--x", "--o", "--+", "--d", "--1", "--*"]
 
 
 def plot_equilibration():
@@ -101,5 +101,12 @@ def mag_plot(sub_dir):
     plt.savefig(fig_path + "analytic.png")
     plt.close(fig)
 
-def time_dependence(sub_dir):
-    pass
+def plot_time_dependence(sub_dir):
+    times = read_times(sub_dir)
+    Ns, _, _ = read_samples(list(observables), sub_dir=sub_dir)
+    fig_path = "figs/" + sub_dir
+
+    fig, ax = plt.subplots(figsize=(6, 4))
+    ax.plot(Ns, times, "x", label="$t$")
+    plt.savefig(fig_path + "times.png")
+    plt.close(fig)
