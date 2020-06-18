@@ -4,7 +4,7 @@ from os import path, mkdir
 from progress.bar import Bar
 
 from utilities import get_s, MC_sweep, get_samples, read_samples, read_times, read
-from physical_quantities import observables, func_of_obs, Tc, units, name
+from physical_quantities import observables, func_of_obs, Tc, units, name, reudced_temp, tension
 
 
 font = {
@@ -81,6 +81,7 @@ def funcs(sub_dir=""):
         plt.tight_layout()
         plt.savefig(fig_path + name[quantity] + ".png", dpi=300)
         plt.close(fig)
+        
 
 def susc(sub_dir):
     Ns, Ts, samples = read_samples(list(observables), sub_dir=sub_dir)
@@ -102,6 +103,7 @@ def susc(sub_dir):
     plt.savefig(fig_path + "analytic.png")
     plt.close(fig)
 
+
 def time_dependence(sub_dir):
     times = read_times(sub_dir)
     Ns, _, _ = read_samples(list(observables), sub_dir=sub_dir)
@@ -114,10 +116,11 @@ def time_dependence(sub_dir):
 
 
 def Mon_Jasnow(sub_dir):
-    Ns, Ts, _= read_samples([], sub_dir)
-    name = "tau"
+    Ns = read(sub_dir, "sizes")
+    Ts = read(sub_dir, "temps")
+    name = "tau_MJ"
     tau = read(sub_dir, name)
-    
+
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.set_ylabel("$\\tau/[J]$")
     ax.set_xlabel("$T/[J]$")
@@ -130,3 +133,37 @@ def Mon_Jasnow(sub_dir):
     plt.tight_layout()
     plt.savefig("figs/" + sub_dir + name + ".png", dpi=300)
     plt.close(fig)
+
+
+
+def more(sub_dir):
+    Ns, Ts, samples = read_samples(list(observables), sub_dir=sub_dir)
+    name = "tau_MJ"
+    tau = tension(samples, Ts, Ns)
+    tau_MJ = read(sub_dir, name)
+    fig_path = "figs/" + sub_dir
+    if not path.isdir(fig_path):
+        mkdir(fig_path)
+    
+    fig, ax = plt.subplots(3)
+    for i, t in enumerate(reudced_temp(Ts)):
+        ax.plot(tau[:, i] / t, 1 / (Ns * t), ".", label="$t = {}$".format(t))
+    ax.legend()
+    plt.show()
+
+    fig, ax = plt.subplots()
+    ax.loglog(tau_MJ[:, 7], Ns)
+    plt.show()
+
+    fig, ax = plt.subplots(2)
+    for i, N in enumerate(Ns):
+        ax[0].plot(Ts, tau[i], styles[i], label="$N={}$".format(int(N)))
+        ax[0].plot(Ts, tau_MJ[i], styles[i], label="$N={}, ext$".format(int(N)))
+    for i, T in enumerate(Ts):
+        ax[0].plot(Ts, tau[:, i], styles[i], label="$T={}$".format(int(T)))
+        ax[0].plot(Ts, tau_MJ[:, i], styles[i], label="$T={}, ext$".format(int(T)))
+    plt.show()
+
+
+if __name__ == "__main__":
+    loglog("test/")

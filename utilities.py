@@ -10,6 +10,7 @@ def get_s(N):
 
     return choice((-1, 1), (N, N))
 
+
 def get_delta_H(s, N):
     """ retrns lattice with change in energy from flipping each spin"""
 
@@ -19,6 +20,7 @@ def get_delta_H(s, N):
             sum_neigh += np.roll(s, n, axis=j)
 
     return 2*s*sum_neigh
+
 
 def get_delta_H_MJ(s, N):
     """ retrns lattice with change in energy from flipping each spin"""
@@ -30,6 +32,7 @@ def get_delta_H_MJ(s, N):
             sum_neigh += np.roll(s_pp, n, axis=j)[1: -1]
 
     return 2*s*sum_neigh
+
 
 def MC_sweep(s, N, T, dH=get_delta_H):
     """ MC-hastings sweep, with prob. c of trying to flipping each spin each loop """
@@ -44,12 +47,12 @@ def MC_sweep(s, N, T, dH=get_delta_H):
         s[to_flip] *= -1
 
 
-def get_sample_from_state(s, N, observables):
+def get_sample_from_state(s, N, T, observables):
     """ samples a set of observables from a configuration of s """
 
     sample = np.empty(len(observables))
     for i, key in enumerate(observables):
-        sample[i] = observables[key](s, N)
+        sample[i] = observables[key](s, N, T)
     return sample
 
 
@@ -66,8 +69,9 @@ def get_samples(N, T, n, equib, observables):
         MC_sweep(s, N, T)
     for _ in range(n):
         MC_sweep(s, N, T)
-        sample_avg += get_sample_from_state(s, N, observables)
+        sample_avg += get_sample_from_state(s, N, T, observables)
     return sample_avg / n
+
 
 def Mon_Jasnow(N, T, n, equib):
     """
@@ -84,13 +88,15 @@ def Mon_Jasnow(N, T, n, equib):
         MC_sweep(s, N, T, dH=get_delta_H_MJ)
         fraction += exp(-2 / T * ms(s, N))
     return - T / N * ln(fraction / n)
-    
+
+
 def write(data, sub_dir, name):
     data_path = "data/" + sub_dir
 
     if not path.isdir(data_path):
         mkdir(data_path)
     np.savetxt(data_path + name + ".csv", data)
+
 
 def read(sub_dir, name):
     data_path = "data/" + sub_dir
@@ -119,6 +125,7 @@ def read_samples(data, sub_dir):
         samples[name] = read(sub_dir, name)
         
     return Ns, Ts, samples
+
 
 def read_times(sub_dir):
     data_path = "data/" + sub_dir
