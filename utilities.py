@@ -133,4 +133,4 @@ def read_times(sub_dir):
     if not path.isdir(data_path):
         raise Exception("Direcotry does not exist")
     
-    return np.loadtxt(data_path + "times.csv")
+    return np.loadtxt(data_path + "times.csv"), np.loadtxt(data_path + "times_MJ.csv")
