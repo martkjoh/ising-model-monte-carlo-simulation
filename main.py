@@ -37,7 +37,6 @@ def sample_observables(sub_dir):
 
     
     bar.finish()
-    print("writing data")
     write_samples(samples_dict, Ns, Ts, times, sub_dir=sub_dir)
 
 
@@ -58,16 +57,14 @@ def full_suite(sub_dir="test/", gen_data=False):
 
     if gen_data:
         sample_observables(sub_dir)
-        # run_mon_jas(sub_dir)
+        run_mon_jas(sub_dir)
     
     plots.vals(sub_dir)
     plots.funcs(sub_dir)
     plots.susc(sub_dir)
     plots.time_dependence(sub_dir)
-    # plots.Mon_Jasnow(sub_dir)
+    plots.Mon_Jasnow(sub_dir)
 
 
 if __name__ == "__main__":
-    # plot_equilibration()
-
-    full_suite()
+    full_suite(sub_dir = sub_dirgen_data=True)

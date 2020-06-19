@@ -4,7 +4,7 @@ from os import path, mkdir
 from progress.bar import Bar
 
 from utilities import get_s, MC_sweep, get_samples, read_samples, read_times, read
-from physical_quantities import observables, func_of_obs, Tc, units, name, reudced_temp, tension
+from physical_quantities import observables, func_of_obs, Tc, units, latex, reudced_temp, tension
 
 
 font = {
@@ -47,7 +47,7 @@ def vals(sub_dir):
 
     for quantity in list(observables):
         fig, ax = plt.subplots(figsize=(6, 4))
-        ax.set_ylabel("$" + quantity + "/[\\mathrm{" + units[quantity] + "}]$")
+        ax.set_ylabel("$" + latex[quantity] + "/[\\mathrm{" + units[quantity] + "}]$")
         ax.set_xlabel("$T / [J]$")
 
         for i, N in enumerate(Ns):
@@ -57,7 +57,7 @@ def vals(sub_dir):
         ax.legend()        
         
         plt.tight_layout()
-        plt.savefig(fig_path + name[quantity] + ".png", dpi=300)
+        plt.savefig(fig_path + quantity + ".png", dpi=300)
         plt.close(fig)
 
 def funcs(sub_dir=""):
@@ -68,7 +68,7 @@ def funcs(sub_dir=""):
 
     for quantity in list(func_of_obs):
         fig, ax = plt.subplots(figsize=(6, 4))
-        ax.set_ylabel("$" + quantity + "/[\\mathrm{" + units[quantity] + "}]$")
+        ax.set_ylabel("$" + latex[quantity] + "/[\\mathrm{" + units[quantity] + "}]$")
         ax.set_xlabel("$T / [J]$")
 
         y = func_of_obs[quantity](samples, Ts, Ns)
@@ -79,7 +79,7 @@ def funcs(sub_dir=""):
         ax.legend()
 
         plt.tight_layout()
-        plt.savefig(fig_path + name[quantity] + ".png", dpi=300)
+        plt.savefig(fig_path + quantity + ".png", dpi=300)
         plt.close(fig)
         
 
@@ -89,7 +89,7 @@ def susc(sub_dir):
     if not path.isdir(fig_path):
         mkdir(fig_path)
 
-    quantity = "|M|"
+    quantity = "absolute_magnetization"
     fig, ax = plt.subplots(figsize=(6, 4))
     ax.set_ylabel("$" + quantity + "/[\\mathrm{" + units[quantity] + "}]$")
     ax.set_xlabel("$T / [J]$")
