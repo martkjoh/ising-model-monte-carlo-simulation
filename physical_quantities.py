@@ -47,49 +47,49 @@ def ms(s, N):
 
 
 observables = {
-    "E": energy_density,
-    "E^2": energy_density_squared,
-    "|M|": absolute_magnetization,
-    "M^2": magnetization_squared,
-    "Z_k:Z_t": fraction
+    "energy_density": energy_density,
+    "energy_density_squared": energy_density_squared,
+    "absolute_magnetization": absolute_magnetization,
+    "magnetization squared": magnetization_squared,
+    "fraction": fraction
 }
 
 def heat_capacity(samples, T, N):
-    return (samples["E^2"] - samples["E"]**2) * np.outer(N, 1/T)**2
+    return (samples["energy_density_squared"] - samples["energy_density"]**2) * np.outer(N, 1/T)**2
 
 def susceptability(samples, T, N):
-    return (samples["M^2"] - samples["|M|"]** 2) * np.outer(N ** 2, 1 / T)
+    return (samples["magnetization squared"] - samples["absolute_magnetization"]** 2) * np.outer(N ** 2, 1 / T)
     
 def tension(samples, T, N):
-    return - np.outer(1 / N, T) * np.log(samples["Z_k:Z_t"])
+    return - np.outer(1 / N, T) * np.log(samples["fraction"])
     
 def reudced_temp(Ts):
     return (Tc - Ts) / Tc
 
 func_of_obs = {
-    "C_M": heat_capacity,
-    "\chi": susceptability,
-    "\\tau": tension
+    "heat_capacity": heat_capacity,
+    "susceptibility": susceptability,
+    "tension": tension
 }
 
 units = {
-    "E": "J",
-    "E^2": "J^2",
-    "|M|": "Am^{-1}",
-    "M^2": "A^2m^{-2}",
-    "Z_k:Z_t": "1",
-    "C_M": "1",
-    "\chi": "Am^{-1}J^{-1}",
-    "\\tau": "J"
+    "energy_density":           "J",
+    "energy_density_squared":   "J^2",
+    "absolute_magnetization":   "Am^{-1}",
+    "magnetization squared":    "A^2m^{-2}",
+    "fraction":                 "1",
+    "heat_capacity":            "1",
+    "susceptibility":           "Am^{-1}J^{-1}",
+    "tension":                  "J"
 }
 
-name = {
-    "E": "energy_density",
-    "E^2": "energy_density_squared",
-    "|M|": "absolute_magnetization",
-    "M^2": "magnetization squared",
-    "Z_k:Z_t": "fraction",
-    "C_M":  "heat_capacity",
-    "\chi": "susceptibility",
-    "\\tau": "tension"
+latex = {
+    "energy_density": "E",
+    "energy_density_squared": "E^2",
+    "absolute_magnetization": "|M|",
+    "magnetization squared": "M^2",
+    "fraction": "Z_k/Z_t",
+    "heat_capacity": "C_M",
+    "susceptibility": "\chi",
+    "tension" : "\\tau"
 }
