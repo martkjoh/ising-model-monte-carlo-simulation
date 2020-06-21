@@ -5,15 +5,15 @@ import numpy as np
 from physical_quantities import observables, Tc
 from time import time
 
-equib = 1_00
-n = 1_00
+equib = 100_000
+n = 100_000
 sub_dir = "quantities/"
 
 # number of different tempratures to simulate
-temps = 20
-Ts = np.linspace(1.5, 1.2*Tc, temps)
+temps = 81
+Ts = np.linspace(0.4, 1.6*Tc, temps)
 # The different sizes of the grid to simutale
-Ns = [8, 12, 16, 20, 24]
+Ns = [8, 16, 24, 32]
 sizes = len(Ns)
 
 
@@ -61,11 +61,11 @@ def full_suite(sub_dir="test/", gen_data=False):
         sample_observables(sub_dir)
         run_mon_jas(sub_dir)
     
-    # plots.vals(sub_dir)
-    # plots.funcs(sub_dir)
-    # plots.susc(sub_dir)
+    plots.vals(sub_dir)
+    plots.funcs(sub_dir)
+    plots.susc(sub_dir)
     plots.time_dependence(sub_dir)
-    # plots.Mon_Jasnow(sub_dir)
+    plots.Mon_Jasnow(sub_dir)
 
 
 if __name__ == "__main__":

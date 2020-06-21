@@ -94,7 +94,7 @@ def susc(sub_dir):
     ax.set_ylabel("$" + quantity + "/[\\mathrm{" + units[quantity] + "}]$")
     ax.set_xlabel("$T / [J]$")
     for i, N in enumerate(Ns):
-        ax.plot(Ts, samples[quantity][i], styles[i%len(styles)], label="$N={}$".format(int(N)))
+        ax.plot(Ts, samples[                                quantity][i], styles[i%len(styles)], label="$N={}$".format(int(N)))
     Ts2 = np.linspace(1.5, Tc, 1000)
     ax.plot(Ts2, (1 - np.sinh(2/ Ts2)**(-4))**(1 / 8), "--", label="Analytical sol.")
     ax.legend()
@@ -135,39 +135,3 @@ def Mon_Jasnow(sub_dir):
     plt.savefig("figs/" + sub_dir + name + ".png", dpi=300)
     plt.close(fig)
 
-
-
-def more(sub_dir):
-    """ What the fuuuuck??!?! """
-
-    Ns, Ts, samples = read_samples(list(observables), sub_dir=sub_dir)
-    name = "tau_MJ"
-    tau = tension(samples, Ts, Ns)
-    # tau = read(sub_dir, name)
-    fig_path = "figs/" + sub_dir
-    if not path.isdir(fig_path):
-        mkdir(fig_path)
-    
-    fig, ax = plt.subplots()
-    m = 38
-    ax.set_title("$T = {}$".format(Ts[m]))
-    ax.loglog(tau[:, m], Ns)
-    plt.show()
-
-    fig, ax = plt.subplots()
-    for i, t in enumerate(reudced_temp(Ts[30:40:2])):
-        ax.plot(tau[:, i] / t, 1 / (Ns * t), "--+", label="$t = {}$".format(t))
-        ax.legend()
-    plt.show()
-
-    fig, ax = plt.subplots(2)
-    print(np.shape(tau))
-    for i, N in enumerate(Ns):
-        ax[0].plot(Ts, tau[i], styles[i], label="$N={}$".format(int(N)))
-    for i, T in enumerate(Ts):
-        ax[1].plot(Ns, Ns*tau[:, i], "--x", label="$T={}$".format(int(T)))
-    plt.show()
-
-
-if __name__ == "__main__":
-    more("quantities/")
