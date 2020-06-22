@@ -6,7 +6,7 @@ from physical_quantities import observables, Tc
 from time import time
 
 equib = 100_000
-n = 100_000
+n = 200_000
 sub_dir = "quantities/"
 
 # number of different tempratures to simulate
@@ -69,4 +69,4 @@ def full_suite(sub_dir="test/", gen_data=False):
 
 
 if __name__ == "__main__":
-    full_suite(gen_data=True)
+    full_suite(sub_dir=sub_dir)
